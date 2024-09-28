@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTA IV Pigeon Tracker | Collect All 200 Flying Rats</title>
+    <meta name="description" content="Track your progress in collecting all 200 flying rats (pigeons) in Grand Theft Auto IV. Interactive tracker with visual grid and progress bar.">
+    <meta name="keywords" content="GTA IV, Grand Theft Auto IV, pigeon tracker, flying rats, GTA IV collectibles, GTA IV 100% completion">
+    <link rel="canonical" href="https://yourdomain.com/gta-iv-pigeon-tracker">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="GTA IV Pigeon Tracker | Collect All 200 Flying Rats">
+    <meta property="og:description" content="Interactive tracker for collecting all 200 flying rats (pigeons) in Grand Theft Auto IV. Visual grid and progress bar to help you achieve 100% completion.">
+    <meta property="og:image" content="https://yourdomain.com/path-to-your-image.jpg">
+    <meta property="og:url" content="https://yourdomain.com/gta-iv-pigeon-tracker">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .pigeon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 5px;
+        }
+        .pigeon-item {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #4a5568;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .collected {
+            background-color: #48bb78;
+            color: #1a202c;
+        }
+        .pigeon-item:hover {
+            transform: scale(1.1);
+        }
+    </style>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "GTA IV Pigeon Tracker",
+      "description": "Interactive tracker for collecting all 200 flying rats (pigeons) in Grand Theft Auto IV.",
+      "url": "https://yourdomain.com/gta-iv-pigeon-tracker",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+</head>
+<body class="font-sans">
+    <div class="container mx-auto px-4 py-8">
+        <header>
+            <h1 class="text-4xl font-bold mb-4 text-center">GTA IV Pigeon Tracker</h1>
+            <p class="text-center mb-8">Track your progress in collecting all 200 flying rats in Grand Theft Auto IV</p>
+        </header>
+        
+        <main>
+            <section class="mb-8">
+                <h2 class="sr-only">Pigeon Image</h2>
+                <img src="/api/placeholder/800/400" alt="GTA IV Pigeons (Flying Rats)" class="w-full rounded-lg shadow-lg">
+            </section>
+            
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold mb-4">Add/Remove Collected Pigeon</h2>
+                <div class="flex">
+                    <input type="number" id="pigeonInput" placeholder="Enter pigeon number" class="flex-grow p-2 rounded-l text-gray-900">
+                    <button onclick="addPigeon()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4">Add</button>
+                    <button onclick="removePigeon()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-r">Remove</button>
+                </div>
+            </section>
+            
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold mb-4">Collection Progress</h2>
+                <svg id="progressChart" width="100%" height="60" class="bg-gray-800 rounded" aria-label="Pigeon collection progress bar"></svg>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold mb-4">Pigeon Collection Grid</h2>
+                <p class="mb-2 text-sm">(Click on a collected pigeon to remove it)</p>
+                <div id="pigeonGrid" class="pigeon-grid" aria-label="Interactive grid of 200 pigeons"></div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-8 pb-4">
+            <p>&copy; 2024 GTA IV Pigeon Tracker. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        const TOTAL_PIGEONS = 200;
+
+        function getCollectedPigeons() {
+            return JSON.parse(localStorage.getItem('collectedPigeons')) || [];
+        }
+
+        function saveCollectedPigeons(pigeons) {
+            localStorage.setItem('collectedPigeons', JSON.stringify(pigeons));
+        }
+
+        function updateGrid() {
+            const collectedPigeons = getCollectedPigeons();
+            const pigeonGrid = document.getElementById('pigeonGrid');
+            pigeonGrid.innerHTML = '';
+
+            for (let i = 1; i <= TOTAL_PIGEONS; i++) {
+                const pigeonItem = document.createElement('div');
+                pigeonItem.className = `pigeon-item ${collectedPigeons.includes(i) ? 'collected' : ''}`;
+                pigeonItem.textContent = i;
+                pigeonItem.onclick = () => togglePigeon(i);
+                pigeonGrid.appendChild(pigeonItem);
+            }
+        }
+
+        function updateProgressChart() {
+            const collectedPigeons = getCollectedPigeons();
+            const chart = document.getElementById('progressChart');
+            const percentage = (collectedPigeons.length / TOTAL_PIGEONS) * 100;
+
+            chart.innerHTML = `
+                <rect width="100%" height="100%" fill="#4a5568" />
+                <rect width="${percentage}%" height="100%" fill="#48bb78" />
+                <text x="50%" y="50%" font-size="16" fill="white" text-anchor="middle" dominant-baseline="central">
+                    ${collectedPigeons.length} / ${TOTAL_PIGEONS} (${percentage.toFixed(1)}%)
+                </text>
+            `;
+        }
+
+        function togglePigeon(pigeonNumber) {
+            let collectedPigeons = getCollectedPigeons();
+            const index = collectedPigeons.indexOf(pigeonNumber);
+            
+            if (index > -1) {
+                collectedPigeons.splice(index, 1);
+            } else {
+                collectedPigeons.push(pigeonNumber);
+                collectedPigeons.sort((a, b) => a - b);
+            }
+
+            saveCollectedPigeons(collectedPigeons);
+            updateGrid();
+            updateProgressChart();
+        }
+
+        function addPigeon() {
+            const pigeonInput = document.getElementById('pigeonInput');
+            const pigeonNumber = parseInt(pigeonInput.value);
+
+            if (isNaN(pigeonNumber) || pigeonNumber < 1 || pigeonNumber > TOTAL_PIGEONS) {
+                alert('Please enter a valid pigeon number between 1 and ' + TOTAL_PIGEONS);
+                return;
+            }
+
+            togglePigeon(pigeonNumber);
+            pigeonInput.value = '';
+        }
+
+        function removePigeon() {
+            const pigeonInput = document.getElementById('pigeonInput');
+            const pigeonNumber = parseInt(pigeonInput.value);
+
+            if (isNaN(pigeonNumber) || pigeonNumber < 1 || pigeonNumber > TOTAL_PIGEONS) {
+                alert('Please enter a valid pigeon number between 1 and ' + TOTAL_PIGEONS);
+                return;
+            }
+
+            const collectedPigeons = getCollectedPigeons();
+            if (!collectedPigeons.includes(pigeonNumber)) {
+                alert('This pigeon is not in your collection!');
+                return;
+            }
+
+            togglePigeon(pigeonNumber);
+            pigeonInput.value = '';
+        }
+
+        updateGrid();
+        updateProgressChart();
+    </script>
+</body>
+</html>
